@@ -212,6 +212,21 @@ function newmodule_scale_used_anywhere($scaleid) {
 }
 
 /**
+ * @uses FEATURE_BACKUP_MOODLE2
+ * @param string $feature FEATURE_xx constant for requested feature
+ * @return mixed True if module supports feature, null if doesn't know
+ */
+function newmodule_supports($feature) {
+    switch($feature) {      
+        case FEATURE_MOD_INTRO:               return true;
+        case FEATURE_GROUPS:                  return true;
+        case FEATURE_IDNUMBER:                return true;
+        case FEATURE_BACKUP_MOODLE2:          return true;
+        default: return null;
+    }
+}
+
+/**
  * Execute post-uninstall custom actions for the module
  * This function was added in 1.9
  *

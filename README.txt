@@ -37,6 +37,9 @@ this module template code.
   your module. You will probably want to modify mod_form.php and view.php
   as a first step. Check db/access.php to add capabilities.
 
+* Finally you will probably want to implement Moodle 2 backup
+  http://docs.moodle.org/en/Development:Backup_2.0_for_developers
+
 We encourage you to share your code and experience - visit http://moodle.org
 
 Good luck!
