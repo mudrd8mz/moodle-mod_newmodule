@@ -44,7 +44,7 @@ add_to_log($course->id, 'newmodule', 'view all', "index.php?id=$course->id", '')
 
 /// Print the header
 
-$PAGE->set_url('mod/newmodule/view.php', array('id' => $id));
+$PAGE->set_url('/mod/newmodule/index.php', array('id' => $id));
 $PAGE->set_title($course->fullname);
 $PAGE->set_heading($course->shortname);
 
@@ -54,7 +54,7 @@ echo $OUTPUT->header();
 
 if (! $newmodules = get_all_instances_in_course('newmodule', $course)) {
     echo $OUTPUT->heading(get_string('nonewmodules', 'newmodule'), 2);
-    echo $OUTPUT->continue_button("view.php?id=$course->id");
+    echo $OUTPUT->continue_button(new moodle_url('/course/view.php', array('id' => $course->id)));
     echo $OUTPUT->footer();
     die();
 }
