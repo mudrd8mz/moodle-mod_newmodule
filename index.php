@@ -26,76 +26,36 @@
  * @copyright 2010 Your Name
  * @license   http://www.gnu.org/copyleft/gpl.html GNU GPL v3 or later
  */
-
-/// Replace newmodule with the name of your module and remove this line
-
-require_once(dirname(dirname(dirname(__FILE__))).'/config.php');
-require_once(dirname(__FILE__).'/lib.php');
+require_once(dirname(dirname(dirname(__FILE__))) . '/config.php');
+require_once(dirname(__FILE__) . '/lib.php');
 
 $id = required_param('id', PARAM_INT);   // course
 
-if (! $course = $DB->get_record('course', array('id' => $id))) {
-    error('Course ID is incorrect');
-}
+$course = $DB->get_record('course', array('id' => $id), '*', MUST_EXIST);
 
 require_course_login($course);
 
 add_to_log($course->id, 'newmodule', 'view all', "index.php?id=$course->id", '');
 
-/// Print the header
-
-$PAGE->set_url('/mod/newmodule/view.php', array('id' => $id));
+$PAGE->set_url('/mod/newmodule/index.php', array('id' => $id));
 $PAGE->set_title($course->fullname);
 $PAGE->set_heading($course->shortname);
 
+/// Get all the appropriate data
+$newmodules = get_all_instances_in_course('newmodule', $course);
+
+/// OUTPUT
 echo $OUTPUT->header();
 
-/// Get all the appropriate data
-
-if (! $newmodules = get_all_instances_in_course('newmodule', $course)) {
+if (empty($newmodules)) {
     echo $OUTPUT->heading(get_string('nonewmodules', 'newmodule'), 2);
-    echo $OUTPUT->continue_button("view.php?id=$course->id");
-    echo $OUTPUT->footer();
-    die();
-}
-
-/// Print the list of instances (your module will probably extend this)
-
-$timenow  = time();
-$strname  = get_string('name');
-$strweek  = get_string('week');
-$strtopic = get_string('topic');
-
-if ($course->format == 'weeks') {
-    $table->head  = array ($strweek, $strname);
-    $table->align = array ('center', 'left');
-} else if ($course->format == 'topics') {
-    $table->head  = array ($strtopic, $strname);
-    $table->align = array ('center', 'left', 'left', 'left');
+    echo $OUTPUT->continue_button("index.php?id=$course->id");
 } else {
-    $table->head  = array ($strname);
-    $table->align = array ('left', 'left', 'left');
+    echo $OUTPUT->heading(get_string('modulenameplural', 'newmodule'), 2);
+/// Print the list of instances (your module will probably extend this)
+    $renderer = $PAGE->get_renderer('mod_newmodule');
+    $newmodulelist = new newmodule_list($newmodules, $course->format);
+    echo $renderer->render($newmodulelist);
 }
-
-foreach ($newmodules as $newmodule) {
-    if (!$newmodule->visible) {
-        //Show dimmed if the mod is hidden
-        $link = '<a class="dimmed" href="view.php?id='.$newmodule->coursemodule.'">'.format_string($newmodule->name).'</a>';
-    } else {
-        //Show normal if the mod is visible
-        $link = '<a href="view.php?id='.$newmodule->coursemodule.'">'.format_string($newmodule->name).'</a>';
-    }
-
-    if ($course->format == 'weeks' or $course->format == 'topics') {
-        $table->data[] = array ($newmodule->section, $link);
-    } else {
-        $table->data[] = array ($link);
-    }
-}
-
-echo $OUTPUT->heading(get_string('modulenameplural', 'newmodule'), 2);
-print_table($table);
-
-/// Finish the page
 
 echo $OUTPUT->footer();
